@@ -15,7 +15,6 @@ const mutation = mutationWithClientMutationId({
   name: 'UserUpdate',
   inputFields: {
     cpf: { type: new GraphQLNonNull(GraphQLString) },
-    saldo: { type: GraphQLFloat },
     nome: { type: GraphQLString },
     email: { type: GraphQLString },
     telefone: { type: GraphQLString },
