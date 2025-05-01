@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLNonNull, GraphQLString, GraphQLInt } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 
 import { User } from '../UserModel';
@@ -6,33 +6,33 @@ import { redisPubSub } from '../../pubSub/redisPubSub';
 import { PUB_SUB_EVENTS } from '../../pubSub/pubSubEvents';
 
 export type UserDeleteInput = {
-  cpf: string;
+  conta: number;
 };
 
 const mutation = mutationWithClientMutationId({
   name: 'UserDelete',
   inputFields: {
-    cpf: { type: new GraphQLNonNull(GraphQLString) },
+    conta: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  mutateAndGetPayload: async ({ cpf }: UserDeleteInput) => {
-    const user = await User.findOneAndDelete({ cpf });
+  mutateAndGetPayload: async ({ conta }: UserDeleteInput) => {
+    const user = await User.findOneAndDelete({ conta });
 
     if (!user) {
-      throw new Error('Usuário não encontrado.');
+      throw new Error('Conta não encontrada.');
     }
 
     redisPubSub.publish(PUB_SUB_EVENTS.USER.DELETED, {
-        deletedCpf: cpf,
+        deletedConta: conta,
       });
 
     return {
-      deletedCpf: cpf,
+      deletedConta: conta,
     };
   },
   outputFields: {
-    deletedCpf: {
+    deletedConta: {
       type: GraphQLString,
-      resolve: ({ deletedCpf }) => deletedCpf,
+      resolve: ({ deletedConta }) => deletedConta,
     },
   },
 });

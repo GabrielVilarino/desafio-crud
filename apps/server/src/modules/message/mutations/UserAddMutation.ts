@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLNonNull, GraphQLFloat } from 'graphql';
+import { GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLInt } from 'graphql';
 import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
 
 import { redisPubSub } from '../../pubSub/redisPubSub';
@@ -10,6 +10,7 @@ import { userField } from '../userFields';
 export type UserAddInput = {
     nome: string;
     cpf: string;
+    conta: number;
     email: string;
     telefone?: string;
     saldo: number;
@@ -20,23 +21,25 @@ const mutation = mutationWithClientMutationId({
     inputFields: {
         nome: { type: new GraphQLNonNull(GraphQLString) },
         cpf: { type: new GraphQLNonNull(GraphQLString) },
+        conta: { type: new GraphQLNonNull(GraphQLInt) },
         email: { type: new GraphQLNonNull(GraphQLString) },
         telefone: { type: GraphQLString },
         saldo: { type: new GraphQLNonNull(GraphQLFloat) },
     },
     mutateAndGetPayload: async (args: UserAddInput) => {
         
-        const cpf = args.cpf
+        const filtro = args.conta
 
-        const findUser = await User.findOne({ cpf });
+        const findUser = await User.findOne({ filtro });
 
         if (findUser) {
-            throw new Error('Usuário ja cadastrado.');
+            throw new Error('Conta já cadastrada.');
         }
 
         const user = await new User({
             nome: args.nome,
             cpf: args.cpf,
+            conta: args.conta,
             email: args.email,
             telefone: args.telefone,
             saldo: args.saldo,

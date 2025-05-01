@@ -1,22 +1,22 @@
-import { GraphQLNonNull, GraphQLFloat, GraphQLString } from 'graphql';
+import { GraphQLNonNull, GraphQLFloat, GraphQLInt } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 
 import { User } from '../UserModel';
 import { userField } from '../userFields';
 
 export type UserSendValueInput = {
-  cpf: string;
+  conta: number;
   valor: number;
 };
 
 const mutation = mutationWithClientMutationId({
   name: 'UserSendValue',
   inputFields: {
-    cpf: { type: new GraphQLNonNull(GraphQLString) },
+    conta: { type: new GraphQLNonNull(GraphQLInt) },
     valor: { type: new GraphQLNonNull(GraphQLFloat) },
   },
-  mutateAndGetPayload: async ({ cpf, valor }: UserSendValueInput) => {
-    const user = await User.findOne({ cpf });
+  mutateAndGetPayload: async ({ conta, valor }: UserSendValueInput) => {
+    const user = await User.findOne({ conta });
 
     if (!user) {
       throw new Error('Usuário não encontrado.');

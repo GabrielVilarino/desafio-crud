@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 export type IUser = {
     nome: string;
     cpf: string;
+    conta: number;
     email: string;
     telefone?: string;
     saldo: number;
@@ -22,6 +23,11 @@ const UserSchema = new mongoose.Schema<IUser>(
             type: String,
             required: true,
             description: 'CPF do usuario',
+        },
+        conta: {
+            type: Number,
+            required: true,
+            description: 'Conta do usuario',
         },
         email: {
             type: String,
@@ -44,11 +50,5 @@ const UserSchema = new mongoose.Schema<IUser>(
         timestamps: true,
     }
 );
-
-export type IMessage = {
-    content: string;
-    createdAt: Date;
-    updatedAt: Date;
-} & Document;
 
 export const User: Model<IUser> = mongoose.model('User', UserSchema);

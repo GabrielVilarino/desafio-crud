@@ -1,11 +1,11 @@
-import { GraphQLNonNull, GraphQLString, GraphQLFloat } from 'graphql';
+import { GraphQLNonNull, GraphQLString, GraphQLInt } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 
 import { User } from '../UserModel';
 import { userField } from '../userFields';
 
 export type UserUpdateInput = {
-  cpf: string;
+  conta: number;
   nome?: string;
   email?: string;
   telefone?: string;
@@ -14,15 +14,15 @@ export type UserUpdateInput = {
 const mutation = mutationWithClientMutationId({
   name: 'UserUpdate',
   inputFields: {
-    cpf: { type: new GraphQLNonNull(GraphQLString) },
+    conta: { type: new GraphQLNonNull(GraphQLInt) },
     nome: { type: GraphQLString },
     email: { type: GraphQLString },
     telefone: { type: GraphQLString },
   },
   mutateAndGetPayload: async (args: UserUpdateInput) => {
-    const { cpf, nome, email, telefone } = args;
+    const { conta, nome, email, telefone } = args;
 
-    const user = await User.findOne({ cpf });
+    const user = await User.findOne({ conta });
 
     if (!user) {
       throw new Error('Usuário não encontrado.');

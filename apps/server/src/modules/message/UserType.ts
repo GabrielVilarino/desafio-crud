@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLInt } from 'graphql';
 import { globalIdField, connectionDefinitions } from 'graphql-relay';
 import type { ConnectionArguments } from 'graphql-relay';
 
@@ -19,6 +19,10 @@ const UserType = new GraphQLObjectType<IUser>({
       cpf: {
         type: GraphQLString,
         resolve: (user) => user.cpf,
+      },
+      conta: {
+        type: GraphQLInt,
+        resolve: (user) => user.conta,
       },
       email: {
         type: GraphQLString,
