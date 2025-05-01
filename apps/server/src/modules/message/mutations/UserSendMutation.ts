@@ -3,7 +3,7 @@ import { mutationWithClientMutationId } from 'graphql-relay';
 
 import { User } from '../UserModel';
 import { userField } from '../userFields';
-
+import { redisLock } from '../../redisLock/redisLock';
 export type UserSendValueInput = {
   conta: number;
   valor: number;
@@ -22,12 +22,29 @@ const mutation = mutationWithClientMutationId({
       throw new Error('Usuário não encontrado.');
     }
 
-    if (user.saldo < valor) {
-      throw new Error('Saldo insuficiente.');
-    }
+    const lockKey = `saldo:${conta}`;
+    let lock;
+    try{
+      lock = await redisLock.acquire([lockKey], 10000);
 
-    user.saldo -= valor;
-    await user.save();
+      if (!lock) {
+        throw new Error('Não foi possível adquirir o bloqueio.');
+      }
+
+      if (user.saldo < valor) {
+        throw new Error('Saldo insuficiente.');
+      }
+
+      user.saldo -= valor;
+      await user.save();
+
+    }catch(err){
+      throw err;
+    } finally {
+      if (lock) {
+        await lock.release();
+      }
+    }
 
     return { user: user._id.toString() };
   },
